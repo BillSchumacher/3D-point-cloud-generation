@@ -23,6 +23,7 @@ scene,camera,fo = util.setupBlender("buffer_fixed",RESOLUTION)
 camPosAll = util.getFixedViews(FIXED)
 
 listFile = open(MODEL_LIST)
+theta = 0
 for line in listFile:
 	MODEL = line.strip()
 	timeStart = time.time()
@@ -46,7 +47,6 @@ for line in listFile:
 		m.use_shadeless = True
 
 	for i in range(FIXED):
-		theta = 0
 		camPos = camPosAll[i]
 		q1 = util.camPosToQuaternion(camPos)
 		q2 = util.camRotQuaternion(camPos,theta)
@@ -59,8 +59,7 @@ for line in listFile:
 		# comment out this block if ShapeNetCore.v1 is used
 		if i==0:
 			for o in bpy.data.objects:
-				if o==camera: o.select = False
-				else: o.select = True
+				o.select = o != camera
 			bpy.ops.transform.rotate(value=-np.pi/2,axis=(0,0,1))
 
 		bpy.ops.render.render(write_still=False)

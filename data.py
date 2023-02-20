@@ -19,12 +19,14 @@ class Loader():
 				self.CADs.append(id)
 		self.CADs.sort()
 	def loadChunk(self,opt,loadRange=None):
-		data = {}
 		if loadRange is not None: idx = np.arange(loadRange[0],loadRange[1])
 		else: idx = np.random.permutation(len(self.CADs))[:opt.chunkSize]
 		chunkSize = len(idx)
-		# preallocate memory
-		data["image_in"] = np.ones([chunkSize,24,opt.inH,opt.inW,3],dtype=np.float32)
+		data = {
+			"image_in": np.ones(
+				[chunkSize, 24, opt.inH, opt.inW, 3], dtype=np.float32
+			)
+		}
 		if self.loadNovel:
 			data["depth"] = np.ones([chunkSize,opt.sampleN,opt.H,opt.W],dtype=np.float32)
 			data["mask"] = np.ones([chunkSize,opt.sampleN,opt.H,opt.W],dtype=np.bool)
@@ -66,13 +68,12 @@ def makeBatch(opt,dataloader,PH):
 	modelIdxTile = np.tile(modelIdx,[opt.novelN,1]).T
 	angleIdx = np.random.randint(24,size=[opt.batchSize])
 	sampleIdx = np.random.randint(opt.sampleN,size=[opt.batchSize,opt.novelN])
-	batch = {
-		inputImage: data["image_in"][modelIdx,angleIdx],
-		targetTrans: data["trans"][modelIdxTile,sampleIdx],
-		depthGT: np.expand_dims(data["depth"][modelIdxTile,sampleIdx],axis=-1),
-		maskGT: np.expand_dims(data["mask"][modelIdxTile,sampleIdx],axis=-1)
+	return {
+		inputImage: data["image_in"][modelIdx, angleIdx],
+		targetTrans: data["trans"][modelIdxTile, sampleIdx],
+		depthGT: np.expand_dims(data["depth"][modelIdxTile, sampleIdx], axis=-1),
+		maskGT: np.expand_dims(data["mask"][modelIdxTile, sampleIdx], axis=-1),
 	}
-	return batch
 
 # make training batch
 def makeBatchFixed(opt,dataloader,PH):
@@ -80,9 +81,10 @@ def makeBatchFixed(opt,dataloader,PH):
 	inputImage,depthGT,maskGT = PH
 	modelIdx = np.random.permutation(opt.chunkSize)[:opt.batchSize]
 	angleIdx = np.random.randint(24,size=[opt.batchSize])
-	batch = {
-		inputImage: data["image_in"][modelIdx,angleIdx],
-		depthGT: np.transpose(data["depth_fixedOut"][modelIdx],axes=[0,2,3,1]),
-		maskGT: np.transpose(data["mask_fixedOut"][modelIdx],axes=[0,2,3,1])
+	return {
+		inputImage: data["image_in"][modelIdx, angleIdx],
+		depthGT: np.transpose(
+			data["depth_fixedOut"][modelIdx], axes=[0, 2, 3, 1]
+		),
+		maskGT: np.transpose(data["mask_fixedOut"][modelIdx], axes=[0, 2, 3, 1]),
 	}
-	return batch

@@ -24,7 +24,7 @@ if not os.path.isdir(output_path):
 
 for m in models:
 	timeStart = time.time()
-	
+
 	shape_file = "{2}/{0}/{1}/models/model_normalized.obj".format(CATEGORY,m,SHAPENETPATH)
 	V,E,F = util.parseObj(shape_file)
 	F = util.removeWeirdDuplicate(F)
@@ -35,8 +35,8 @@ for m in models:
 	Elist.sort(key=lambda i:util.edgeLength(V,E,i),reverse=True)
 
 	# create edge-to-triangle and triangle-to-edge lists
-	EtoF = [[] for j in range(len(E))]
-	FtoE = [[] for j in range(len(F))]
+	EtoF = [[] for _ in range(len(E))]
+	FtoE = [[] for _ in range(len(F))]
 	for f in range(len(F)):
 		v = F[f]
 		util.pushEtoFandFtoE(EtoF,FtoE,E,f,v[0],v[1])
@@ -45,7 +45,7 @@ for m in models:
 	V,E,F = list(V),list(E),list(F)
 
 	# repeat densification
-	for z in range(densifyN):
+	for _ in range(densifyN):
 		util.densify(V,E,F,EtoF,FtoE,Elist)
 
 	densifyV = np.array(V[-densifyN:])

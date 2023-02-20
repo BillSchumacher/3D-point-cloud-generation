@@ -23,8 +23,10 @@ with tf.device("/gpu:0"):
 # compute test error for one prediction
 def computeTestError(Vs,Vt,type):
 	VsN,VtN = len(Vs),len(Vt)
-	if type=="pred->GT": evalN,VsBatchSize,VtBatchSize = min(VsN,200),200,100000
-	if type=="GT->pred": evalN,VsBatchSize,VtBatchSize = min(VsN,200),200,40000
+	if type == "GT->pred":
+		evalN,VsBatchSize,VtBatchSize = min(VsN,200),200,40000
+	elif type == "pred->GT":
+		evalN,VsBatchSize,VtBatchSize = min(VsN,200),200,100000
 	# randomly sample 3D points to evaluate (for speed)
 	randIdx = np.random.permutation(VsN)[:evalN]
 	Vs_eval = Vs[randIdx]

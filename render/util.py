@@ -45,9 +45,7 @@ def projectionMatrix(scene,camera):
 	u_0 = scale_u/2.0
 	v_0 = scale_v/2.0
 	skew = 0 # only use rectangular pixels
-	P = np.array([[scale_u,      0,u_0],
-				  [0      ,scale_v,v_0]])
-	return P
+	return np.array([[scale_u, 0, u_0], [0, scale_v, v_0]])
 
 def cameraExtrinsicMatrix(q,camPos):
 	R_world2bcam = quaternionToRotMatrix(q).T
@@ -76,14 +74,13 @@ def camPosToQuaternion(camPos):
 	cx,cy,cz = cx/camDist,cy/camDist,cz/camDist
 	t = np.linalg.norm([cx,cy])
 	tx,ty = cx/t,cy/t
-	yaw = np.arccos(ty) 
+	yaw = np.arccos(ty)
 	yaw = 2*np.pi-np.arccos(ty) if tx>0 else yaw
 	pitch = 0
 	roll = np.arccos(np.clip(tx*cx+ty*cy,-1,1))
 	roll = -roll if cz<0 else roll
-	q2 = quaternionFromYawPitchRoll(yaw,pitch,roll)	
-	q3 = quaternionProduct(q2,q1)
-	return q3
+	q2 = quaternionFromYawPitchRoll(yaw,pitch,roll)
+	return quaternionProduct(q2,q1)
 
 def camRotQuaternion(camPos,theta):
 	theta = np.deg2rad(theta)
@@ -117,10 +114,25 @@ def quaternionFromYawPitchRoll(yaw,pitch,roll):
 	return [qa,qb,qc,qd]
 
 def quaternionToRotMatrix(q):
-	R = np.array([[1-2*(q[2]**2+q[3]**2),2*(q[1]*q[2]-q[0]*q[3]),2*(q[0]*q[2]+q[1]*q[3])],
-				  [2*(q[1]*q[2]+q[0]*q[3]),1-2*(q[1]**2+q[3]**2),2*(q[2]*q[3]-q[0]*q[1])],
-				  [2*(q[1]*q[3]-q[0]*q[2]),2*(q[0]*q[1]+q[2]*q[3]),1-2*(q[1]**2+q[2]**2)]])
-	return R
+	return np.array(
+		[
+			[
+				1 - 2 * (q[2] ** 2 + q[3] ** 2),
+				2 * (q[1] * q[2] - q[0] * q[3]),
+				2 * (q[0] * q[2] + q[1] * q[3]),
+			],
+			[
+				2 * (q[1] * q[2] + q[0] * q[3]),
+				1 - 2 * (q[1] ** 2 + q[3] ** 2),
+				2 * (q[2] * q[3] - q[0] * q[1]),
+			],
+			[
+				2 * (q[1] * q[3] - q[0] * q[2]),
+				2 * (q[0] * q[1] + q[2] * q[3]),
+				1 - 2 * (q[1] ** 2 + q[2] ** 2),
+			],
+		]
+	)
 
 def rotMatrixToQuaternion(R):
 	t = R[0,0]+R[1,1]+R[2,2]
