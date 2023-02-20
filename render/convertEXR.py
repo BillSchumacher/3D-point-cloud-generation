@@ -17,8 +17,7 @@ def readEXR(fname,RESOLUTION):
 	height,width = RESOLUTION,RESOLUTION
 	FLOAT = Imath.PixelType(Imath.PixelType.FLOAT)
 	vectors = [np.array(array.array("f",file.channel(c,FLOAT))) for c in channel_list]
-	depth = vectors[0].reshape([height,width])
-	return depth
+	return vectors[0].reshape([height,width])
 
 listFile = open(MODEL_LIST)
 for line in listFile:

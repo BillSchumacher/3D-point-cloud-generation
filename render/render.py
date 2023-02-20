@@ -21,6 +21,7 @@ RESOLUTION = int(sys.argv[-1])
 scene,camera,fo = util.setupBlender("buffer",RESOLUTION)
 
 listFile = open(MODEL_LIST)
+N = 100
 for line in listFile:
 	MODEL = line.strip()
 	timeStart = time.time()
@@ -43,7 +44,6 @@ for line in listFile:
 	for m in bpy.data.materials:
 		m.use_shadeless = True
 
-	N = 100
 	for i in range(N):
 		# uniformly sample rotation angle
 		rho,azim,elev,theta = util.randomRotation()
@@ -59,8 +59,7 @@ for line in listFile:
 		# comment out this block if ShapeNetCore.v1 is used
 		if i==0:
 			for o in bpy.data.objects:
-				if o==camera: o.select = False
-				else: o.select = True
+				o.select = o != camera
 			bpy.ops.transform.rotate(value=-np.pi/2,axis=(0,0,1))
 
 		bpy.ops.render.render(write_still=False)

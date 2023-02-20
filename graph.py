@@ -11,12 +11,14 @@ def encoder(opt,image): # [B,H,W,3]
 		batchnorm = batchNormalization(opt,conv,type="conv")
 		relu = tf.nn.relu(batchnorm)
 		return relu
+
 	def linearLayer(opt,feat,outDim,final=False):
 		weight,bias = createVariable(opt,[int(feat.shape[-1]),outDim])
 		fc = tf.matmul(feat,weight)+bias
 		batchnorm = batchNormalization(opt,fc,type="fc")
 		relu = tf.nn.relu(batchnorm)
-		return relu if not final else fc
+		return fc if final else relu
+
 	with tf.variable_scope("encoder"):
 		feat = image
 		with tf.variable_scope("conv1"): feat = conv2Layer(opt,feat,96) # 32x32
@@ -73,12 +75,14 @@ def encoder_resnet(opt,image): # [B,H,W,3]
 		batchnorm = batchNormalization(opt,conv,type="conv")
 		relu = tf.nn.relu(batchnorm)
 		return relu
+
 	def linearLayer(opt,feat,outDim,final=False):
 		weight,bias = createVariable(opt,[int(feat.shape[-1]),outDim])
 		fc = tf.matmul(feat,weight)+bias
 		batchnorm = batchNormalization(opt,fc,type="fc")
 		relu = tf.nn.relu(batchnorm)
-		return relu if not final else fc
+		return fc if final else relu
+
 	with tf.variable_scope("encoder"):
 		feat = image
 		with tf.variable_scope("conv1"): feat = conv2Layer(opt,feat,32) # 32x32

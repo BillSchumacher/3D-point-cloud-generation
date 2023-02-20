@@ -24,16 +24,20 @@ def parseObj(fname):
 	face = np.array(face)
 	# parse edges
 	for f in face:
-		edge.append([min(f[0],f[1]),max(f[0],f[1])])
-		edge.append([min(f[0],f[2]),max(f[0],f[2])])
-		edge.append([min(f[1],f[2]),max(f[1],f[2])])
-	edge = [list(s) for s in set([tuple(e) for e in edge])]
+		edge.extend(
+			(
+				[min(f[0], f[1]), max(f[0], f[1])],
+				[min(f[0], f[2]), max(f[0], f[2])],
+				[min(f[1], f[2]), max(f[1], f[2])],
+			)
+		)
+	edge = [list(s) for s in {tuple(e) for e in edge}]
 	edge = np.array(edge)
 	return vertex,edge,face
 
 def removeWeirdDuplicate(F):
 	F.sort(axis=1)
-	F = [f for f in F]
+	F = list(F)
 	F.sort(key=lambda x:[x[0],x[1],x[2]])
 	N = len(F)
 	for i in range(N-1,-1,-1):
